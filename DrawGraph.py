@@ -40,6 +40,9 @@ def showFrame():
         global result, idx, showMode
         if idx == -1 and not result:
             result, showMode = bfsGraph(pts), True
+            print("필터링 전: %d개" %len(result))
+            result = list(filter(lambda x: not isCrossGraph(x), result))
+            print("필터링 후: %d개" %len(result))
             idx+=1
             canvas.create_line(result[idx])
         else:
@@ -54,6 +57,7 @@ def showFrame():
         for ovalParam in ovalParams:
             canvas.create_oval(ovalParam[0], ovalParam[1], ovalParam[2], ovalParam[3], fill=ovalParam[4])
         idx-=1
+        print("idx: %d" %idx)
         canvas.create_line(result[idx])
         
     def onNextTap():
@@ -66,6 +70,7 @@ def showFrame():
             for ovalParam in ovalParams:
                 canvas.create_oval(ovalParam[0], ovalParam[1], ovalParam[2], ovalParam[3], fill=ovalParam[4])
             idx+=1
+            print("idx: %d" %idx)
             canvas.create_line(result[idx])
         else:
             pass
@@ -151,7 +156,37 @@ def bfsGraph(points):
             
     return result
 
-def test_module(function, params):
+def ccw(pos1, pos2, pos3):
+    x1, x2, x3 = pos1[0], pos2[0], pos3[0]
+    y1, y2, y3 = pos1[1], pos2[1], pos3[1]
+    tmp = x1*y2+x2*y3+x3*y1 - y1*x2-y2*x3-y3*x1
+    if tmp > 0:
+        return 1
+    elif tmp < 0:
+        return -1
+    else:
+        return 0
+
+def isCross(a, b, c, d):
+    abc, abd, cda, cdb = ccw(a, b, c), ccw(a, b, d), ccw(c, d, a), ccw(c, d, b)
+    ab, cd = abc*abd, cda*cdb
+    if ab == 0 and cd == 0 and (sum([abc**2, abd**2, cda**2, cdb**2])==0  or (a!=c and a!=d and b!=c and b!=d)):
+        if a > b:
+            a, b = b, a
+        if c > d:
+            c, d = d, c
+        return c<b and a<d
+    return ab<0 and cd<0
+
+def isCrossGraph(graph):
+    for i in range(len(graph)-1):
+        for j in range(len(graph)-1):
+            if i != j:
+                if isCross(graph[i], graph[i+1], graph[j], graph[j+1]):
+                    return True
+    return False
+
+def testDriver(function, params):
     if function == bfsGraph:
         result = bfsGraph(params)
         n = len(result)
@@ -159,6 +194,7 @@ def test_module(function, params):
         for i in range(len(result)):
             result[i] = [idx[i], *result[i]]
         print("\n".join(map(str, result)))
+    elif function == isCrossGraph:
+        print(f"{params}: {isCrossGraph(params)}")
 
-# test_module(bfsGraph, [(3, 3), (1, 2), (2, 1), (4, 2), (5, 1)])
 showFrame()
