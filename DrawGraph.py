@@ -34,20 +34,28 @@ def showFrame():
         pts, result, idx, ovalParams, showMode = [], [], -1, [], False
         textPosX.delete(1.0, "end-1c")
         textPosY.delete(1.0, "end-1c")
+        textCurrentIdx.delete(1.0, "end-1c")
+        textEndIdx.delete(1.0, "end-1c")
         canvas.delete("all")
 
     def onConfirmTap():
         global result, idx, showMode
-        if idx == -1 and not result:
-            result, showMode = bfsGraph(pts), True
-            print("필터링 전: %d개" %len(result))
-            result = list(filter(lambda x: not isCrossGraph(x), result))
-            print("필터링 후: %d개" %len(result))
-            idx+=1
-            canvas.create_line(result[idx])
-        else:
-            pass
-        
+        try:
+            if idx == -1 and not result:
+                result, showMode = bfsGraph(pts), True
+                print("필터링 전: %d개" %len(result))
+                result = list(filter(lambda x: not isCrossGraph(x), result))
+                print("필터링 후: %d개" %len(result))
+                idx+=1
+                canvas.create_line(result[idx])
+                textCurrentIdx.insert(INSERT, idx+1)
+                textEndIdx.insert(INSERT, len(result))
+            else:
+                pass
+        except:
+            print("***점을 2개 이상 찍어주세요***")
+            btnReset.invoke()
+            
     def onPreviousTap():
         global idx, ovalParams
         if not result or idx < 1:
@@ -57,8 +65,9 @@ def showFrame():
         for ovalParam in ovalParams:
             canvas.create_oval(ovalParam[0], ovalParam[1], ovalParam[2], ovalParam[3], fill=ovalParam[4])
         idx-=1
-        print("idx: %d" %idx)
         canvas.create_line(result[idx])
+        textCurrentIdx.delete(1.0, "end-1c")
+        textCurrentIdx.insert(INSERT, idx+1)
         
     def onNextTap():
         global idx
@@ -70,8 +79,9 @@ def showFrame():
             for ovalParam in ovalParams:
                 canvas.create_oval(ovalParam[0], ovalParam[1], ovalParam[2], ovalParam[3], fill=ovalParam[4])
             idx+=1
-            print("idx: %d" %idx)
             canvas.create_line(result[idx])
+            textCurrentIdx.delete(1.0, "end-1c")
+            textCurrentIdx.insert(INSERT, idx+1)
         else:
             pass
 
@@ -122,6 +132,24 @@ def showFrame():
     btnNext = Button(frameButtonBox, text="Next", command=onNextTap,
                         overrelief="solid", width=10)
     btnNext.place(relx=0.1, rely=0.64)
+    
+    # Now
+    textNow=Text(frameButtonBox, bg="#f0f0f0", width=4, height=1, relief="flat")
+    textNow.insert(INSERT,"Now:")
+    textNow.place(relx=0.0, rely=0.87)
+    
+    # current idx
+    textCurrentIdx=Text(frameButtonBox, bg="#f0f0f0", width=6, height=1, relief="flat")
+    textCurrentIdx.place(relx=0.4, rely=0.87)
+
+    # End
+    textEnd=Text(frameButtonBox, bg="#f0f0f0", width=4, height=1, relief="flat")
+    textEnd.insert(INSERT,"End:")
+    textEnd.place(relx=0.0, rely=0.92)
+
+    # end idx
+    textEndIdx=Text(frameButtonBox, bg="#f0f0f0", width=6, height=1, relief="flat")
+    textEndIdx.place(relx=0.4, rely=0.92)
         
     root.mainloop()
 
