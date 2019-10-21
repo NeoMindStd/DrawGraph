@@ -50,6 +50,7 @@ def showFrame():
                 canvas.create_line(result[idx])
                 textCurrentIdx.insert(INSERT, idx+1)
                 textEndIdx.insert(INSERT, len(result))
+                print(*result[idx])
             else:
                 pass
         except:
@@ -68,6 +69,7 @@ def showFrame():
         canvas.create_line(result[idx])
         textCurrentIdx.delete(1.0, "end-1c")
         textCurrentIdx.insert(INSERT, idx+1)
+        print(*result[idx])
         
     def onNextTap():
         global idx
@@ -82,6 +84,7 @@ def showFrame():
             canvas.create_line(result[idx])
             textCurrentIdx.delete(1.0, "end-1c")
             textCurrentIdx.insert(INSERT, idx+1)
+            print(*result[idx])
         else:
             pass
 
@@ -204,7 +207,7 @@ def isCross(a, b, c, d):
         if c > d:
             c, d = d, c
         return c<b and a<d
-    return ab<0 and cd<0
+    return (ab<=0 and cd<=0) and not (a==c or a==d or b==c or b==d)
 
 def isCrossGraph(graph):
     for i in range(len(graph)-1):
